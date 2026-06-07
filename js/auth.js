@@ -2,7 +2,7 @@
 // Browser hanya terima {allowed:true/false} — email list tidak pernah bocor
 
 const APPS_SCRIPT_URL =
-  "https://script.google.com/a/macros/stekom.ac.id/s/AKfycbyeKMVOQw_P13lILQ_XZT_okKf0bYJ4NvzDXLw2SaHScKE3vDx5_y9tFO0idrTzdXU-6A/exec";
+  "https://script.google.com/macros/s/AKfycbzFcU2s9MDyYA9Pp-bdRCZ94rBv343ZNtJ8s7C3LfrPjS4vRYnzwvsUnpFAa7cAoSU2Qg/exec";
 
 async function checkAccess(email) {
   if (!email) return false;
