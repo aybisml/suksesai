@@ -1,6 +1,6 @@
 // auth.js — Validasi via JSONP (bypass CSP Canvas Gemini)
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbx1TyqywEQBytmwt2mN01wKXuArRsHr51EMbzRClQPy6YCJK62gJ53jy38vD9ki2z-i5A/exec";
+  "https://script.google.com/macros/s/AKfycbzkiLJ7CZRX41IxFnKdJ-xxS3EPqzFjUQ5k15D2XrDFMsiKu-yR5Rr1PXwedsA0NCd8YQ/exec";
 
 function checkAccess(email) {
   return new Promise((resolve) => {
