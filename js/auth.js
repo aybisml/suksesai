@@ -1,22 +1,42 @@
-// auth.js — Validasi akses via Google Apps Script
-// Browser hanya terima {allowed:true/false} — email list tidak pernah bocor
-
+// auth.js — Validasi via JSONP (bypass CSP Canvas Gemini)
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzFcU2s9MDyYA9Pp-bdRCZ94rBv343ZNtJ8s7C3LfrPjS4vRYnzwvsUnpFAa7cAoSU2Qg/exec";
+  "https://script.google.com/macros/s/AKfycbx1TyqywEQBytmwt2mN01wKXuArRsHr51EMbzRClQPy6YCJK62gJ53jy38vD9ki2z-i5A/exec";
 
-async function checkAccess(email) {
-  if (!email) return false;
-  try {
-    const p = new URLSearchParams({
+function checkAccess(email) {
+  return new Promise((resolve) => {
+    if (!email) return resolve(false);
+
+    // Buat callback unik
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+
+    // Timeout 10 detik
+    const timer = setTimeout(() => {
+      delete window[cb];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(false);
+    }, 10000);
+
+    // JSONP callback
+    window[cb] = function (data) {
+      clearTimeout(timer);
+      delete window[cb];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(data && data.allowed === true);
+    };
+
+    // Inject script tag — tidak kena CSP fetch restriction
+    const script = document.createElement("script");
+    const params = new URLSearchParams({
       email: email.toLowerCase().trim(),
-      ua: navigator.userAgent.slice(0, 100),
+      callback: cb,
       ref: location.hostname,
     });
-    const r = await fetch(APPS_SCRIPT_URL + "?" + p, { cache: "no-store" });
-    if (!r.ok) return false;
-    const d = await r.json();
-    return d.allowed === true;
-  } catch (e) {
-    return false;
-  }
+    script.src = APPS_SCRIPT_URL + "?" + params.toString();
+    script.onerror = () => {
+      clearTimeout(timer);
+      delete window[cb];
+      resolve(false);
+    };
+    document.head.appendChild(script);
+  });
 }
